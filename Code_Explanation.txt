@@ -1,0 +1,123 @@
+Full Code Explanation - MongoDB Form Submission in Next.js
+
+This document explains every file in your project that is involved in saving form data to MongoDB. We will go through each file one by one.
+
+--------------------------------------------------
+Project Structure (Only the relevant files)
+--------------------------------------------------
+app/
+  Details.tsx              <-- The Form (Frontend - what user sees)
+  lib/
+    mongodb.ts             <-- Database Connection
+    model/
+      user.ts              <-- Database Schema (shape of your data)
+  api/
+    user/
+      route.ts             <-- API Route (Backend - handles form submission)
+
+
+--------------------------------------------------
+How the Data Flows
+--------------------------------------------------
+When a user clicks "Submit", here is what happens step by step:
+
+1. User fills in name, number, email and clicks Submit on Details.tsx
+2. Form validates the input (checks blank, 10 digits, @ symbol)
+3. Form sends a request with the data to your backend API (/api/user)
+4. The API route connects to MongoDB
+5. The API route creates a new User document and saves it
+6. The API sends a success/error response back to the form
+7. The form shows an alert and clears the fields
+
+
+--------------------------------------------------
+File 1: app/lib/mongodb.ts (Database Connection)
+--------------------------------------------------
+This file is responsible for connecting your app to the MongoDB database.
+
+It uses 'mongoose', a library that makes it easy to work with MongoDB.
+We create an async function called 'mongodb'. It's async because connecting to a database takes time, so we need to wait for it.
+
+Inside the 'try' block, we attempt to connect to MongoDB using mongoose.connect.
+The URL 'mongodb://127.0.0.1:27017/Details' tells it to connect to your local computer (127.0.0.1) on the default MongoDB port (27017) and use the database named 'Details'.
+
+If successful, it prints "database connected sucess".
+If it fails, the 'catch' block catches the error and prints it to the console so your app doesn't crash.
+
+Finally, we export the function so other files can use it.
+
+
+--------------------------------------------------
+File 2: app/lib/model/user.ts (Database Schema/Model)
+--------------------------------------------------
+This file defines the shape (structure) of the data that will be stored in MongoDB. Think of it like a form template.
+
+First, we create a UserSchema. This tells MongoDB that every user MUST have:
+- name (text)
+- number (number)
+- email (text)
+They are all marked as 'required: true', meaning they cannot be left empty.
+
+Next, we create the model: mongoose.models.user || mongoose.model("user", UserSchema);
+This creates a collection called 'users' in MongoDB based on the schema.
+The 'mongoose.models.user ||' part is a safety check for Next.js to prevent it from trying to create the model multiple times during development.
+
+
+--------------------------------------------------
+File 3: app/api/user/route.ts (API Route - Backend)
+--------------------------------------------------
+This is the backend of your app. When the form sends data, it arrives here.
+
+It is placed in 'app/api/user/route.ts', which makes it accessible at the URL '/api/user'.
+
+We export a POST function. 'POST' means this function handles incoming data that we want to save.
+
+Steps inside the POST function:
+1. await mongodb(); -> This connects to the database.
+2. const data = await req.json(); -> This extracts the data sent from the form.
+3. const user = new User({ name: data.name, number: data.number, email: data.email }); -> This creates a new entry using the User model template.
+4. await user.save(); -> This actually saves the data to the MongoDB database.
+5. return NextResponse.json(...) -> This sends a success message back to the frontend form.
+
+
+--------------------------------------------------
+File 4: app/Details.tsx (The Form - Frontend)
+--------------------------------------------------
+This is what the user sees and interacts with in the browser.
+
+It starts with "use client", which tells Next.js to run this code in the user's browser, allowing it to handle user input and button clicks.
+
+We use 'useState' to store the form values (name, number, email).
+
+The handleSubmit Function:
+This is called when the user clicks Submit.
+
+First, it validates the data:
+- Checks if name is empty.
+- Checks if number is exactly 10 digits.
+- Checks if email contains an @ symbol.
+
+If everything is valid, it uses 'fetch' to send the data to the API:
+fetch("/api/user", { method: 'POST', body: JSON.stringify({ name, number, email }) })
+
+After sending, it waits for the response.
+If the response is successful (res.ok), it shows a success alert and clears the form fields by setting them back to empty strings.
+If it fails, it shows an error alert.
+
+
+--------------------------------------------------
+What Happens in MongoDB
+--------------------------------------------------
+After successful submission, your data is stored in your MongoDB server.
+- Database: Details
+- Collection: users
+
+Example saved document:
+{
+  "_id": "664cba1f2e3a4b5c6d7e8f9a",
+  "name": "John",
+  "number": 1234567890,
+  "email": "john@gmail.com",
+  "__v": 0
+}
+(The _id is automatically generated by MongoDB, and __v is added by mongoose).
