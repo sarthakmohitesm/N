@@ -1,7 +1,7 @@
 "use client"
 import { METHODS } from 'http';
 import React, { useState } from 'react'
-
+import Display from './component/Display';
 
 
 export const Details = () => {
@@ -10,7 +10,7 @@ export const Details = () => {
     const [number, setNumber] = useState('');
     const [email, setEmail] = useState('');
 
-    const handleSubmit = async() => {
+    const handleSubmit = async () => {
 
 
         if (name === "") {
@@ -25,30 +25,29 @@ export const Details = () => {
             alert("email should be valid")
         }
         else {
-            try{
-                const res = await fetch("/api/user",{
-                    method:'POST',
-                    headers:{"content-Type" : "application/json"},
-                    body : JSON.stringify({name,number,email}),
+            try {
+                const res = await fetch("/api/user", {
+                    method: 'POST',
+                    headers: { "content-Type": "application/json" },
+                    body: JSON.stringify({ name, number, email }),
                 });
 
 
                 const data = await res.json();
-                if (res.ok ){
+                if (res.ok) {
                     alert("details added successfully");
                     setName("");
                     setNumber("");
                     setEmail("");
 
-                }else
-                {
-                    alert("failed "+data.message)
+                } else {
+                    alert("failed " + data.message)
                 }
 
             }
-            catch(err){
-                console.log("Error",err)
-                alert ("something went wrong");
+            catch (err) {
+                console.log("Error", err)
+                alert("something went wrong");
             }
         }
     }
@@ -64,7 +63,7 @@ export const Details = () => {
                     <input type="text"
                         className='bg-white rounded-full text-black p-1'
                         value={name}
-                        onChange={(e) => setName(e.target.value)} 
+                        onChange={(e) => setName(e.target.value)}
                     />
                 </div>
                 <div>
@@ -88,6 +87,8 @@ export const Details = () => {
 
                 <button className='bg-cyan-400 w-50 rounded-full text-black h-10' onClick={handleSubmit} > Submit</button>
             </div>
+
+            <Display></Display>
         </div>
     )
 }
