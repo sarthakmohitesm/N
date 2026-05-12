@@ -1,7 +1,5 @@
-"use client"
+
 import React, { useEffect, useState } from 'react'
-
-
 
 const Display = () => {
 
@@ -14,24 +12,32 @@ const Display = () => {
     }, []);
 
     return (
-        <div >
-            <div className='bg-white text-black h-100 w-200 m-14  border-2 border-cyan-500 rounded-4xl flex justify-center items-center'>
+        <div>
+            <div className='bg-white text-black m-14 border-2 border-cyan-500 rounded-4xl overflow-hidden'>
 
-                {users.map((user: any, i) => (
-                    <div key={i}>
-                        <p>{user.name}</p>
-                        <p>{user.number}</p>
-                        <p>{user.email}</p>
-
-                    </div>
-                ))}
+                <table className='w-full border-collapse'>
+                    <thead>
+                        <tr className='bg-cyan-500 text-white text-left'>
+                            <th className='px-6 py-3'>#</th>
+                            <th className='px-6 py-3'>Name</th>
+                            <th className='px-6 py-3'>Number</th>
+                            <th className='px-6 py-3'>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {users.map((user: any, i) => (
+                            <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-cyan-50'}>
+                                <td className='px-6 py-3 border-b border-cyan-100'>{i + 1}</td>
+                                <td className='px-6 py-3 border-b border-cyan-100 font-medium'>{user.name}</td>
+                                <td className='px-6 py-3 border-b border-cyan-100'>{user.number}</td>
+                                <td className='px-6 py-3 border-b border-cyan-100'>{user.email}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
 
             </div>
-
-
         </div>
-
-
     )
 }
 
