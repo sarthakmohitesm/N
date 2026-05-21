@@ -23,9 +23,3 @@ export const POST = async (req: Request) => {
     });
     ;
 }
-
-export const GET = async () => {
-    await mongodb();
-    const users = await User.find({});
-    return NextResponse.json(users);
-}

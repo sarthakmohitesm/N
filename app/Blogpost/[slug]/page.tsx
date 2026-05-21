@@ -13,7 +13,7 @@ export default async function Page({
     notFound()
   }
 
-  // ✅ Throw here — error.tsx in the parent /Blogpost folder will catch this
+ 
   throw new Error("Something went wrong")
 
   return <div>My Post: {slug}</div>
